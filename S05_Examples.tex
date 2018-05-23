@@ -1,0 +1,125 @@
+% Section:Examples
+
+%%%
+First of all, the NPAG program has been used successfully in high-dimensional and very complex pharmacokinetic-pharmacodynamic models.
+%
+In \citet{Ramos16}, the NPAG program was used for a population model of the pharmacodynamics of vancomycin for CoNS infection in neonates.
+(Vancomycin is an antibiotic used to treat a number of serious bacterial infections. Coagulase-negative staphylococci (CoNS) are the most commonly isolated pathogens in the neonatal intensive care unit. )
+% 
+This model had 7 nonlinear differential equations and 11 random parameters.
+%
+The population was a combination of 300 experimental and animal subjects.
+%
+In \citet{Drusano14}, the NPAG program was used for a population model of two drugs for the treatment of tuberculosis.  This model had 5 nonlinear differential equations, 3 nonlinear algebraic equations, 1671 observations from 6 outputs and 29 random parameters. In the algebraic equations, the state variables were only defined implicitly and had to be solved for by an iterative method. 
+%The run time for this example took months. 
+
+%%%
+The above two examples are too complex to use for simulation purposes.
+%
+Consequently we present here a simpler model which has an analytic solution and which can be checked by other algorithms. Nevertheless, the estimation of parameters in this model is not trivial. 
+%%
+%However,we have found that,  in general, the values of $K_{cp}$ and $K_{pc}$ are essentially non-iidentifiable in a noisy environment.
+%
+We consider a three-compartment PK model with a continuous IV infusion into the central compartment and a bolus input into the absorption compartment.
+%
+The individual subject model is described by the following differential equations:
+\begin{align}
+\frac{\mathrm{d}x_1}{\mathrm{d}t} & = -K_{a} x_1,  \quad  
+		x_1(t) =
+		\begin{cases}
+			0 & \mbox{for $0 \le t < 5$}  \\
+			b & \mbox{if $t = 5$}
+		\end{cases} \nonumber \\
+\frac{\mathrm{d}x_2}{\mathrm{d}t} & = K_{a} x_1- \left( K_{el}+K_{cp} \right) x_2 +K_{pc} x_3 + r(t), \quad  x_2(0)=0 \nonumber \\
+\frac{\mathrm{d}x_3}{\mathrm{d}t} & = K_{cp} x_2 - K_{pc} x_3,  \quad x_3(0) = 0 \nonumber 
+\end{align}
+
+\noindent{and output equation}
+
+$y_1(t) = x_2(t)/V_c + w(t),  w(t) \sim  N(0, \sigma^2), \;  \sigma = 5.5 \; $
+
+%
+
+\noindent The inputs are a bolus $b = 2000$ at $t = 5$  and a continuous infusion  $r(t) = 500$, for  $t \geq  0$.
+%
+This model has 5 random parameters ($V$, $K_a$, $K_{el}$, $K_{cp}$,  $K_{pc}$).
+%
+A diagram of this model is given in Figure \ref{Fig:Model}.
+%
+It is known that this model is structurally identifiable, see \citet{Godfrey86}.
+However, we have found that for a continuous IV infusion, the parameters  $K_{cp}$ and $K_{pc}$ are very difficult to estimate in a noisy environment.
+
+%Witout the second output $y_2$, is known that this model is structurally identifiable \cite{Godfrey86}.
+%%
+%
+%We remove this problem by adding the second output $y_2$.
+
+
+%%%
+The details of the simulation are as follows.
+%
+There were $300$ simulated subjects.
+%
+The random variables $(V, \; K_{a}, \; K_{cp},  \; K_{pc})$ were independently simulated from  normal distributions with means  respectively equal to $(1.2, \; 0.8, \;  0.2, \; 2.0)$ and standard deviations equal to 25\% coefficient of variation.
+
+%%%
+The random variable  $K_{el}$  was independently simulated from a bimodal mixture of two normal distributions with means  respectively equal to $0.5$ and $1.5$, with standard deviations equal to $10\%$ coefficient of variation, and with weights equal to $0.2$ and $0.8$.
+%
+This distribution would apply to an elimination rate constant with a bimodal distribution where $80\%$ of the subjects have a mean of $1.5$,   and only $20\%$  have a mean of $0.5$.
+%
+The power of the nonparametric method allows the detection of the $20\%$ group.
+%
+
+%%%
+
+%Sixteen observations were taken at times: 
+%$t = 1.04, \; 1.09, \; 5.42, \; 5.44, \; 6.05, \; \\
+%\noindent  
+%6.73,\;  7.76, \; 8.35,  \; 9.15,\; 9.18,\; 13.48,\; 15.27,\; 15.42,\;  15.43\; 15.75$.
+
+%$t = 2@1.07, 2@5.43, 6.05, 6.56, 6.73, 7.76, 8.35, 2@9.17, 13.48, 15.27, 2@15.42, 15.75$.  
+
+%$t = 2@1.07, \; \\2@5.43, \; 6.05, \; 6.56, \; 6.73,\;  7.76, \; 8.35,  \; 2@9.17,\; 13.48,\; 15.27,\; 2@15.42,\; 15.75$.  
+
+%$t = 1.04, \; 1.09, \; \\5.42, \; 5.44, \; 6.05, \; 6.56, \; 
+%6.73,\;  7.76, \; 8.35,  \; 9.15,\; 9.18,\; 13.48,\; 15.27,\; 15.42,\;  15.43\; 15.75$. 
+% 
+%%
+Twelve observations were taken at times  
+
+%$t = 1.07, \; 5.43, \; 6.05, \; 6.56, \; 6.73,\;  7.76, \; 8.35,  \; 9.17,\; 13.48,\; 15.27,\; 15.42,\; 15.75$.  
+
+$t = 1.1, \; 5.4, \; 6.1, \; 6.5, \; 6.7,\;  7.8, \; 8.4,  \; 9.2,\; 13.5,\; 15.3,\; 15.5,\; 15.8$.  
+%
+
+\noindent These sampling times were chosen in an ad hoc fashion and are not to be considered optimal.
+In Figure  \ref{Fig:Spaghetti} we show the profiles of the 300 noisy model outputs $y_1$.
+%
+These profiles are plotted as piecewise linear functions with nodes at the observation times.  
+%
+
+The initial Faure set had $80,321$  support points. After the first  iteration of the NPAG  algorithm, the number of support points was down to $300$, where it essentially stayed for the rest of the algorithm. 
+After $100$ iterations NPAG was stopped based on the convergence criteria of Section 3.5.%resulting in 261 support points.
+%%
+%(The algorithm essentially converged after $50$ iterations.)
+
+The simulated and estimated  marginal distributions are shown in Figures  \ref{Fig:EstimatedPK} and \ref{Fig:SimulatedPK}.
+It is seen that the estimated marginal distributions were quite accurate.
+when compared to the simulated histograms. 
+In particular the bimodal shape of $K_{el}$ was uncovered. 
+
+
+NPAG is designed to estimate the whole joint distribution of the parameters. 
+%
+As mentioned earlier, the estimate $F^{ML}$ is especially important for our application to population pharmacokinetics where  $F^{ML}$ is used as a prior distribution for Bayesian dosage regimen design.
+However, $F^{ML}$ is a consistent estimator of the true mixing distribution and consequently, the moments of $F^{ML}$  should be consitent estimators of the true moments. Means and variances of parameter estimates for $F^{ML}$
+can be easily obtained by integrating the corresponding marginal distributions.
+So as a check of this fact, in  Table 1, the  comparisons of estimated versus simulated means and variances are shown. Again, results are quite accurate, see Table
+\ref{Table:ExampleResults}.
+
+
+Finally, in Figure \ref{Fig:EstimatedvsSimulated} we include a graph of Predicted versus Observed values which shows the all around good fit of the data. The predicted values are gotten as follows: For each subject, the Bayesian mean estimate of the parameters are found using the final NPAG distribution as a prior and that subject's observations. Then based on these parameter means, the subject's concentration profile is calculated.
+
+
+
+

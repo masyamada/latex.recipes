@@ -1,0 +1,94 @@
+%
+% AlanNPAG Algorithm
+%
+\begin{algorithm*}[htp]
+\caption{NPAG Algorithm. 
+Input: $( \bm{Y}, \bm{\phi}^0, \bm{a}, \bm{b},\Delta_D,\Delta_L,\Delta_F, \Delta_e,\Delta_\lambda)$,
+$\bm{a}$ and $\bm{b}$ are the lists of lower and upper bounds, respectively, of $\Theta$;
+$\Delta_D$ is the minimum distance allowable between points in the estimated $F^{ML}$.
+$\Delta_x$ see \S \ref{SS:Convergence}.
+%  
+Output: $(\bm{\phi}, \bm{\lambda}, l(\bm{\lambda}, \bm{\phi})  )$.
+}
+\label{OuterLoopOfNPAG}
+\begin{algorithmic}[1]
+%
+\Procedure{NPAG}{$\bm{Y}$, $\bm{\phi}^0, \bm{a}, \bm{b},\Delta_D$} \Comment{Estimate $F^{ML}$ given $\bm{Y}$}
+
+ \noindent \State {Initialization:
+	$\bm{\phi} =\bm{\phi}^0$,
+	$LogLike=-10^{30}$,
+	$F_0=10^{30}$,
+	$F_1=2*F_0$, $eps=0.2$, 
+	$\Delta_e=10^{-4}$, $\Delta_F=10^{-2}$, $\Delta_L=10^{-4}$, $\Delta_\lambda=10^{-3}$,
+	$n = 0$}
+%
+	\While{$eps \geq \Delta_e$ or $ \vert F_1-F_0 \vert \geq \Delta_F $ }
+
+		\State{Calculate $\bm{\Psi}(\bm{\phi})$}
+			\Comment{$N \times K$ matrix $\{ p(Y_i\vert\phi_k)\}$}
+	
+		\State {$[\bm{\hat{\lambda}}(\bm{\phi}),l(\bm{\hat{\lambda}}(\bm{\phi}),\bm{\phi})] \longleftarrow \mbox{PDIP}(\bm{\Psi}(\bm{\phi})) $ }
+			\Comment{Appendix \ref{App:PDIP}} %  see \S \ref{SS:GridExpansion}}	
+%
+
+		\If{ $\left( \mbox{MAXCYCLES}  == 0 \right) $}
+				\State{$F_{est}^{ML} \longleftarrow l(\bm{\hat{\lambda}}(\bm{\phi}),\bm{\phi})$}
+				\State{$\bm{\lambda} \longleftarrow \bm{\hat{\lambda}}(\bm{\phi})$}
+				\State{\Return $[ \bm{\phi}, \bm{\lambda}, F_{est}^{ML}]$}
+		\EndIf
+%
+		\State{$n \longleftarrow n + 1$}
+%
+		\State {$\bm{\phi}^c \longleftarrow \mbox{CONDENSE}(\bm{\phi},\bm{\hat{\lambda}}(\bm{\phi}), \Delta_\lambda)$}
+			\Comment{Alg. 3}
+
+		\State {$[\bm{\hat{\lambda}}(\bm{\phi}^c),l(\bm{\hat{\lambda}}(\bm{\phi}^c),\bm{\phi}^c)] \longleftarrow \mbox{PDIP}(\bm{\Psi}(\bm{\phi}^c)) $}
+			% \Comment{$\mbox{PDIP returns } G^{n+1}$, see \S \ref{SS:GridExpansion}}
+			\Comment{$\mbox{PDIP returns } G^{n}$}
+
+		\State {$NewLogLike =  l(\bm{\hat{\lambda}}(\bm{\phi}^c),\bm{\phi}^c)$}
+		\If{ $ \left( n > \mbox{MAXCYCLES} \right) $}
+				\State{$F_{est}^{ML} \longleftarrow l(\bm{\hat{\lambda}}(\bm{\phi}^c),\bm{\phi}^c)$}
+				\State{$\bm{\lambda} \longleftarrow \bm{\hat{\lambda}}(\bm{\phi}^c)$}
+				\State{\Return $[ \bm{\phi}, \bm{\lambda}, F_{est}^{ML}]$}
+		\EndIf
+		\If{ $\vert NewLogLike - LogLike \vert \leq \Delta_L $  {\bf and} $ eps >  \Delta_e $}
+			
+
+			\State{$eps=eps / 2$} \Comment{Adjust precision} %
+		\EndIf
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\algstore{store_Alan_alg}		
+%\end{algorithmic}
+%\end{algorithm}
+%% \clearpage
+%\begin{algorithm} % Continued Float
+%\caption*{NPAG Algorithm, continued.}
+%\begin{algorithmic}
+%\algrestore{store_Alan_alg}
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%
+		\If{$ eps \leq \Delta_e$} \Comment{check EXIT conditions}
+			\State{$F_1 = NewLogLike$} 
+			\If{  $ \vert F_1 - F_0 \vert \leq \Delta_F$} 
+				% \State{EXIT conditions are met.}
+				\State{$F_{est}^{ML} \longleftarrow F_1$}
+				\State{$\bm{\phi} \longleftarrow \bm{\phi}^c; \bm{\lambda} \longleftarrow \bm{\hat{\lambda}}(\bm{\phi}^c)$}
+				\State{\Return $[ \bm{\phi}, \bm{\lambda}, F_{est}^{ML}]$}
+			\Else
+				\State{$F_0 = F_1$; $eps = 0.2$} 
+					\Comment{Reset Algorithm}
+			\EndIf
+		\EndIf
+		% \State{$\bm{\phi}^e \longleftarrow  \mbox{EXPAND} (\bm{\phi}^c, eps, \bm{a}, \bm{b}, \Delta_D )$}
+		\State {$\bm{\phi} \longleftarrow \bm{\phi}^e \longleftarrow  \mbox{EXPAND} (\bm{\phi}^c, eps, \bm{a}, \bm{b}, \Delta_D )$}  \Comment{Alg.  2}	
+		\State{$LogLike \leftarrow NewLogLike$ }		
+
+%
+\EndWhile
+
+\EndProcedure
+\end{algorithmic}
+\end{algorithm*}

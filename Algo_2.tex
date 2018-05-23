@@ -1,0 +1,107 @@
+
+%
+\begin{algorithm}[tbh]
+%
+\caption{EXPAND. 
+Input:
+$\bm{\phi}$=$(\phi_1, \cdots, \phi_K)$,
+$\Delta_G$,
+$\Theta = [a_1, b_1] \times [a_2, b_2] \times ... \times [a_Q, b_Q]$, 
+$\bm{a}=[a_1, \cdots, a_Q]$,
+$\bm{b}=[b_1, \cdots, b_Q]$,
+$\Delta_D$.
+Output: $\bm{\phi}'$=$(\phi'_1, \cdots, \phi'_M)$,
+where $M \le K(1 + 2Q)$.
+Note: In this algorithm,
+$\bm{\phi}$=$(\phi_1, \cdots, \phi_K)$ is a $Q \times K$ matrix,
+with $Q = \dim{\Theta}$.
+% with $Q$-dimensional columns $\phi_q$, $q=1,\cdots,Q$.
+}	
+\label{GridExpansionAlg}
+%
+\begin{algorithmic}[2]
+\Function{Expand} {$\bm{\phi}$, $\Delta_G$,  $\bm{a}$, $\bm{b}$,  $\Delta_D$}	
+
+	\State{Initialize:
+		$[Q, K] = size(\bm{\phi})$,
+		$\bf{I} = Q \times Q$ Identity matrix,
+		${\mathrm{new}\bm{\phi}} \longleftarrow \bm{\phi}$}
+
+	\For {$k = 1, ..., K$} 
+		\Comment{$K = \mbox{ number of input support points}$}	
+
+		\For {$d= 1, ..., Q$} 		
+			\Comment{$Q = \dim{\Theta}$ }
+
+			\State{$T(d)= \Delta_G(b(d)-a(d))$}
+
+				\If { $\phi(d,k) + T(d) \leq b(d)$ } 
+					\Comment{Check upper boundary}
+
+					\State{$\bm{\phi}^{+} =  \bm{\phi}(:,k) + T(d){\bf I}(:, d)$} 
+
+					\State{$dist = 10^{30}$}
+
+				\EndIf
+
+				\For {$k_{in} = 1:\mathrm{length}(\mathrm{new}\bm{\phi})$}
+
+					\State{$\mathrm{newdist} = \sum \mathrm{abs}{( \bm{\phi}^{+}
+							- \mathrm{new}\bm{\phi}(:,k_{in}))./(\bm{b} - \bm{a})}$ }
+						\Comment{x ./y done component-wise}
+
+					\State{$dist = \min(dist,\mathrm{newdist})$}
+
+				\EndFor
+
+				\If {$dist \ge \Delta_D$} 
+ 					\Comment{Check distance to new support point}
+
+					\State{$\mathrm{new}\bm{\phi} \longleftarrow \left[ \mathrm{new}\bm{\phi}, \bm{\phi}^{+} \right]$}  
+				\EndIf
+
+%    %%%%%%%%%%%%%%%%%%%%%%%%%%
+%    \algstore{store_AG_alg}		
+%    \end{algorithmic}
+%    \end{algorithm}
+%    %%% % \clearpage
+%    \begin{algorithm} % Continued Float
+%    %%% \caption{EXPAND, continued.}
+%    \begin{algorithmic} [2]
+%    \algrestore{store_AG_alg}
+%    %%%%%%%%%%%%%%%%%%%%%%%%%
+
+		\If {$\phi(d,k) - T(d) \geq a(d)$ } 
+				\Comment{Check lower boundary}
+
+			\State{$\bm{\phi}^{-} = \bm{\phi}(:,k) - T(d){\bf I}(:,d)$}
+
+			\State{$dist = 10^{30}$}
+
+		\EndIf
+
+		\For{ $k_{in} = 1: \mathrm{length}(\mathrm{new}\bm{\phi}(1,:))$ }
+
+			\State{$\mathrm{newdist} =
+				\sum( \mbox{abs}( \bm{\phi}^{-} - \mathrm{new}\bm{\phi}(:,k_{in})) \; ./ (b-a) ) $}
+				\Comment{x./y done component-wise}
+
+			\State{$dist = \min(dist,\mathrm{newdist})$}
+
+		\EndFor
+		\If {$dist \ge \Delta_D$} 
+ 				\Comment{Check distance to new support point}
+			\State{$\mathrm{new}\bm{\phi} \longleftarrow [\mathrm{new}\bm{\phi},  \bm{\phi}^{-}]$}  
+		\EndIf
+
+	\EndFor % all dimensions
+
+	\EndFor	% All input points
+
+	\State{$\bm{\phi} \longleftarrow \mbox{new}\bm{\phi}$}
+%
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+

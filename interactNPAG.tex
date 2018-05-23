@@ -1,0 +1,231 @@
+% interactnlmsample.tex
+% v1.05 - August 2017
+% Alan Revisions Dec 19, 2017
+
+% \PassOptionsToPackage{dvipdfmx}{graphicx}
+% \PassOptionsToPackage{dvipdfmx}{rotating}
+\documentclass[]{interact}
+
+% interact.cls includes:
+% \RequirePackage{amsmath,amssymb,amsfonts,amsbsy,amsthm,booktabs,epsfig,graphicx,rotating}
+
+%-------------------------------------- interact required packages -----------------------------------------------
+% \usepackage{epstopdf} % To incorporate .eps illustrations using PDFLaTeX, etc.
+%%%% Yamada removed this b/c he has no eps figures, only jpg and png
+
+% \usepackage[caption=false]{subfig}% Support for small, `sub' figures and tables
+%%%% in order to \usepackage{subfigure}
+%\usepackage[nolists,tablesfirst]{endfloat}% To `separate' figures and tables from text if required
+%\usepackage[doublespacing]{setspace}% To produce a `double spaced' document if required
+%\setlength\parindent{24pt}% To increase paragraph indentation when line spacing is doubled
+
+\usepackage[numbers,sort&compress]{natbib}% Citation support using natbib.sty
+\bibpunct[, ]{[}{]}{,}{n}{,}{,}% Citation support using natbib.sty
+\renewcommand\bibfont{\fontsize{10}{12}\selectfont}% Bibliography support using natbib.sty
+\makeatletter% @ becomes a letter
+\def\NAT@def@citea{\def\@citea{\NAT@separator}}% Suppress spaces between citations using natbib.sty
+\makeatother% @ becomes a symbol again
+
+\theoremstyle{plain}% Theorem-like structures provided by amsthm.sty
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+\newtheorem{notation}{Notation}
+
+%------------------------------------ Author Requested Packages -----------------------------------------------   
+\RequirePackage{fix-cm} % removes some restrictions on size of CM and EC fonts
+% \smartqed  % flush right qed marks, e.g. at end of proof
+%
+% \usepackage{bmpsize}
+% \usepackage[dvipdfmx]{graphicx} % 
+
+% \usepackage{graphicx} % Required by interact.cls
+
+% \usepackage[round]{natbib}
+%
+% \usepackage{mathptmx}      % use Times fonts if available on your TeX system
+%
+\usepackage{algorithm,algorithmicx,algpseudocode}
+ \usepackage{subfigure} 
+% \usepackage{amsmath,mathtools,amssymb,eucal,bbm,bm}
+\usepackage{mathtools,eucal,bm}
+% bbm removed b/c didn't work w/journal; bbm only required to get nice looking Real symbol
+% amssymb is good enough Real symbol
+\usepackage{bigstrut} % make table vertical spacing bigger
+\usepackage{afterpage}
+% \usepackage[titletoc,title]{appendix}
+% etc.
+%
+% please place your own definitions here and don't use \def but
+% \newcommand{}{}
+%
+% Insert the name of "your journal" with
+% \journalname{Journal of Statistical Computation and Simulation}
+%
+
+%%% \AtBeginDocument{%  This fixes the margin and text widths; but delete before submission
+%%%     \paperwidth=\dimexpr
+%%%       1in + \oddsidemargin
+%%%     + \textwidth
+%%%     % + \marginparsep + \marginparwidth
+%%%     + 1in + \oddsidemargin
+%%%   \relax
+%%%   \paperheight=\dimexpr
+%%%     1in + \topmargin
+%%%     + \headheight + \headsep
+%%%     + \textheight
+%%%     % + \footskip
+%%%     + 1in + \topmargin
+%%%   \relax
+%%%   \usepackage[pass]{geometry}\relax
+%%% }
+
+%------------------------------------------------------------------------------------------
+\begin{document}
+
+\articletype{ARTICLE TEMPLATE} % Specify the article type or omit as appropriate
+
+%------------------------------------------------------------------------------------------             Title
+
+\title{An algorithm for nonparametric estimation of a  multivariate
+               mixing distribution}
+
+\newif\ifanonymous
+\anonymoustrue
+
+\ifanonymous
+\else
+% \author{
+% \name{A.~N. Author\textsuperscript{a}\thanks{CONTACT A.~N. Author. Email: latex.helpdesk@tandf.co.uk} and John Smith\textsuperscript{b}}
+% \affil{\textsuperscript{a}Taylor \& Francis, 4 Park Square, Milton Park, Abingdon, UK; \textsuperscript{b}Institut f\"{u}r Informatik, Albert-Ludwigs-Universit\"{a}t, Freiburg, Germany}
+% }
+
+\author{
+\name{
+Walter M. Yamada\textsuperscript{a}$^\ast$\thanks{$^\ast$CONTACT W.~M. Yamada. Email: wyamada@chla.usc.edu}
+\and Michael N. Neely\textsuperscript{a}\textsuperscript{b} 
+\and David S. Bayard\textsuperscript{c} 
+\and James V. Burke\textsuperscript{d} 
+\and Mike van Guilder\textsuperscript{a} 
+\and Roger W. Jelliffe\textsuperscript{a} 
+\and Alona Kryshchenko\textsuperscript{a}\textsuperscript{e}$\dagger$\thanks{$\dagger$CONTACT A. Kryshchenko. Department of Mathematics, California State University Channel Islands,  1 University Dr, Camarillo, CA 93012, USA}
+\and Robert Leary\textsuperscript{f} 
+\and Alan Schumitzky\textsuperscript{e}$\ddagger$\thanks{$\ddagger$CONTACT A. Schumitzky. Tel.:+1 818-249-9444. Fax:+1 213-740-2424. Email: schum@usc.edu}
+}
+%
+\affil{
+ \textsuperscript{a}Laboratory of Applied Pharmacokinetics and Bioinformatics, Children's Hospital of Los Angeles,  Los Angeles, CA 90027, USA;
+\and
+\textsuperscript{b}Pediatric Infectious Diseases, Children's Hospital of Los Angeles, Keck School of Medicine, University of Southern California, Los Angeles, CA 90027, USA; % \\ \email{mneely@chla.usc.edu}
+\and
+\textsuperscript{c}Jet Propulsion Laboratory, California Institute of Technology, Pasadena CA, 91109, USA; % \\ \email{dbay007@earthlink.net,}
+\and
+\textsuperscript{d}Department of Mathematics, University of Washington, Seattle, WA  98195, USA; % \\ \email{jvburke@uw.edu}
+% \and M. van Guilder \at \email{uphill@cox.net} \and R.W. Jelliffe \at \email{jelliffe@usc.edu}
+\and 
+\textsuperscript{e}Department of Mathematics, University of Southern California, Los Angeles, CA 90089, USA;
+%Department of Mathematics, California State University Channel Islands,  University Dr, Camarillo, CA 93012, USA; % \\\email{achubatyuk@gmail.com}
+\and
+\textsuperscript{f}Certara, Raleigh, NC 27606, USA; %  \\\email{Bob.Leary@certara.com}
+%% \and
+%% \textsuperscript{g}Department of Mathematics, University of Southern California, Los Angeles, CA 90089, USA %\\Tel.:+1 818-249-9444; Fax:+1 213-740-2424 \\\email{schum@usc.edu}
+}} % END of \author INFORMATION
+\fi
+
+\maketitle
+
+%------------------------------------------------------------------------------------------             Abstract
+
+\begin{abstract}
+In this paper we describe a nonparametric maximum likelihood (NPML) algorithm for estimating multivariate mixing distributions. Given $N$ independent observations, convexity theory shows that the NPML estimator is discrete with at most $N$ support points. The original infinite NPML problem then becomes the finite dimensional problem of finding the location and probability of the support points. The probability of the support points is found by a Primal-Dual Interior-Point method; the location of the support points is found by an Adaptive Grid method. Our method is able to handle high-dimensional and complex multivariate mixture models.  An important application is discussed for the problem of population pharmacokinetics and a non-trivial example is treated. In addition to population pharmacokinetics, this research also applies to empirical Bayes estimation and many other areas of applied mathematics.
+\end{abstract}
+
+\begin{abbreviations}
+IPM; NPAG; NPML
+\end{abbreviations}
+
+\begin{keywords}
+% Multivariate mixing distributions;
+High dimensional statistics;
+Nonparametric maximum likelihood;
+Primal-dual interior-point method;
+Adaptive grid
+% \and Population pharmacokinetics
+\end{keywords}
+
+{\bf WORD COUNT = 5084}
+
+%------------------------------------------------------------------------------------------             Body of Paper 
+
+\section{Introduction} \label{Section:Introduction}
+    \input{S01_Introduction}
+\section{Other algorithms} \label{Section:Other_algorithms}
+    \input{S02_OtherAlgorithms}
+\section{Adaptive Grid Method} \label{Section:Adaptive_Grid_Method}
+    \input{S03_NPAGProgram}
+\section{Convergence}
+    \input{S04_Convergence}
+\section{Examples} \label{Section:Examples}
+    \input{S05_Examples}
+\section{Final Remarks and Conclusions} \label{Section:Conclusion}
+    \input{S06_Conclusion}
+
+%------------------------------------------------------------------------------------------             End Matter 
+
+\ifanonymous
+\else
+\section*{Funding}
+%NIH/NCRR-R01RR11526,
+%NIH/NIGMS-R01 GM65619,
+%NIH/NIBIB-RO1 EB005803,
+%NIH/NIGMS-R01GM068968, and
+%NIH/NICHHD-R01HD070886.
+This work was supported in part by grants from NIH:
+RR11526, GM65619, GM068968, EB005803, EB001978,   HD070886.
+JB was supported in part by NSF/DMS-0505712.
+%
+%% 1R01HD070886-Ontogeny of Voriconazole Pharmacokinetics and Metabolism
+%% NIH/Eunice Kennedy Shriver National Institute of Child Health & Human Development
+% 
+%% 2R01GM068968-Population Pharmacokinetic Modeling and Dual Optimal Control
+%% NIH/National Institute of General Medical Studies
+\fi
+
+% \begin{appendices}
+\input{AppendixPDIP_004}
+% \end{appendices}
+
+% BibTeX users please use one of
+\bibliographystyle{unsrtnat}
+% \bibliographystyle{spbasic}      % basic style, author-year citations
+%\bibliographystyle{spmpsci}      % mathematics and physical sciences
+%            MISSING FILE          \bibliographystyle{spphys}       % APS-like style for physics
+\bibliography{References}   % name your BibTeX data base
+\clearpage
+
+%NPAGAlgorithm
+\input{Algo_1} %1
+\afterpage{\clearpage}
+
+%ExpansionAlgorithm
+\input{Algo_2} 
+
+%CondenseAlgorithm
+\input{Algo_3}
+% \afterpage{\clearpage}
+\clearpage
+\input{Tables} \afterpage{\clearpage}
+
+\input{Figures} \afterpage{\clearpage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+ \end{document}

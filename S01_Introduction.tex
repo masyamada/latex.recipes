@@ -1,0 +1,175 @@
+% Introduction_v13
+
+%%%
+The mixing distribution problem we consider can be stated as follows.
+%
+Let $\bm{Y}_1, ... , \bm{Y}_N$ be a sequence of independent but not necessarily identically distributed random vectors % .
+%
+% Each $\bm{Y}_i$ is a matrix of
+constructed from one or more observations from each of $N$ subjects in the population.
+%
+Let $\bm{\theta}_1,...,\bm{\theta}_N$ be a sequence of independent and identically distributed 
+% $Q$-dimensional 
+random vectors belonging to a  compact subset $\Theta$ of Euclidean space with common but {\em unknown} distribution $F$.
+%
+The $\{\bm{\theta}_i\}$ are not observed.
+%
+It is assumed that the conditional densities $p(\bm{Y}_i \vert \bm{\theta}_i)$ are known, for $i = 1,...,N$.
+%
+The mixing distribution of $\bm{Y}_i$ with respect to $F$ is given by $p(\bm{Y}_i \vert F ) = \int p(\bm{Y}_i \vert \bm{\theta}_i ) dF(\bm{\theta}_i)$.
+%
+Because of independence of the $\{\bm{Y}_i\}$, the mixing distribution of the $\{\bm{Y}_i\}$ with respect to $F$ is given by
+%
+\begin{equation}
+	L(F) = p(\bm{Y}_1,...,\bm{Y}_N \vert F) = \prod_{i=1}^N \int p \left(\bm{ Y}_i \vert \bm{\theta}_i \right) dF\left( \bm{\theta}_i \right)
+\end{equation}
+%
+{\em The mixing distribution problem is to maximize the likelihood function  $L(F)$ with respect to all probability distributions $F$ on $\Theta$.}
+
+%%%
+Remark.
+%
+The distribution $F^{ML}$ that maximizes $L(F)$ is a {\em consistent} estimator of the true mixing distribution. This was proved originally by 
+Kiefer and Wolfowitz in 1956
+ \cite {Kiefer1956} . %Kiefer and Wolfowitz (1956). %in 1956 \cite {Kiefer1956}. 
+%
+The consistency of $F^{ML}$ is especially important for our application to population pharmacokinetics where  $F^{ML}$ is used as a prior distribution for Bayesian dosage regimen design.
+
+
+%%%
+The algorithm described in this paper differs from most other published methods in a number of ways. Our algorithm allows for high dimensional $\Theta$.  
+%
+Most published methods require the dimension of $\Theta$ to be small and many require the dimension of $\Theta$ to be 1, see Section \ref{Section:Other_algorithms}. 
+%
+We have treated examples where the dimension of $\Theta$ is as high as 29, 
+%although in this case the run time took months, 
+see Section \ref{Section:Examples}.
+%
+
+Also most published algorithms require the $\{\bm{Y}_i\}$ to be identically distributed and assume that the conditional densities $\{p(\bm{Y}_i \vert \bm{\theta}_i)\}$ 
+are rather simple, such as $p(\bm{Y}_i \vert \bm{\theta}_i)$ is a multivariate normal density with mean vector and covariance matrix $\bm{\Sigma}$.
+%
+%= $N(\theta,\sigma^2)$, in the univariate case or $p(Y_i \vert \theta_i)$ = $N(\theta,\Sigma)$ in the multivariate case. (Here and in what follows, $N(\mu,\Sigma)$ will mean a normal distribution with mean vector $\mu$
+%and covarince matrix $\Sigma$.) 
+%
+Even if $\bm{\Sigma}$ is unknown and has to be estimated, the structure of this model is straightforward. However, the estimation of $\bm{\Sigma}$ has to be done carefully to avoid singularities, see Wang and Wang \cite{Wang2015}.
+As will be described in Section \ref{Section:Examples}, we allow  $p(\bm{Y}_i \vert \bm{\theta}_i)$ to be calculated from a  system of nonlinear ordinary differential-algebraic  equations.
+
+%%%
+We now describe the details of our algorithm. It was proved by
+\citet {Lindsay1983} and \citet {Mallet1986} , 
+under simple hypotheses
+on the conditional densities $\{p(\bm{Y}_i \vert \bm{\theta}_i)\}$, that  the global maximizer $F^{ML}$ of $L(F)$ could be represented by a discrete distribution with at most $N$ support points.
+
+%Eq. (\ref{Eqn:Likelihood002}) is the starting point of many NPML algorithms.
+
+%
+This result leads immediately to a finite dimensional optimization problem for $F^{ML}$, namely to maximize the likelihood function
+\begin{equation}
+%\begin
+	L( \bm{\lambda}, \bm{\phi}) =\prod_{i=1}^N \sum_{k=1}^K  \lambda_k p\left( \bm{Y}_i \vert  \bm{\phi}_k \right)
+%\end
+\label{Eqn:Likelihood001}
+\end{equation}
+with respect to the support points $\bm{\phi} = ( \bm{\phi}_1, ... ,  \bm{\phi}_K)$ 
+and weights $ \bm{\lambda} = ( \lambda_1, ... ,\lambda_K)$  such that 
+$  \bm{\phi}_k \in \Theta, \lambda_k \geq 0$
+for $k=1, ... , K$, $K \leq N$ and \; $\sum_{k=1}^K   \lambda_k = 1$. 
+
+% In the above equation and in what follows, for any symbol $\alpha$, we will use the notation $\bar \alpha$ to indicate  $\bar \alpha=(\alpha_1, ... ,\alpha_n)$ for some $n$
+
+In our algorithm $l(\bm{\lambda},\bm{\phi})=\log L(\bm{\lambda},\bm{\phi})$ is maximized, so that
+%In our algorithm $l(\bf \lambda,\bar\phi)=\log L(\mathbf{ \lambda},\bar \phi)$ is maximized, so that
+\begin{equation}
+	l(\bm{\lambda},\bm{\phi}) =\sum_{i=1}^N \log \sum_{k=1}^K  \lambda_k p\left( \bm{Y}_i \vert  \bm{\phi}_k \right)
+\label{Eqn:Likelihood001b}
+\end{equation}
+and the maximization problem becomes
+%\[
+%	 \quad \mbox{maximize} \; l \left( \bar \lambda, \bar \phi \right) \; \mbox{s.t.} \;
+% 0 \le \bar \lambda, \; e^T\bar \lambda = 1,
+%\]
+\begin{equation}
+\mbox{maximize} \;  l(\bm{\lambda},\bm{\phi})
+\label{Eqn:Likelihood002}
+\end{equation}
+such that $\bm{\phi} \in \Theta^K$, $\bm{\lambda} = ( \lambda_1, ... , \lambda_K) \in \mathbb{R}_+^K$, $K \leq N$  and \; $\sum_{k=1}^K   \lambda_k = 1$.
+
+
+
+Although the maximization problem in Eq. (\ref{Eqn:Likelihood002}) is finite dimensional, it is still high dimensional.
+%
+The dimension of the maximization problem in Eq. (\ref{Eqn:Likelihood002}) is $N (\dim{\Theta}) + (N - 1)$.
+
+The optimization problem in Eq. (\ref{Eqn:Likelihood002}) is naturally divided into two problems:
+%\begin{enumerate}[leftmargin=0cm]
+%\item 
+
+%[Problem 1)] 
+Problem 1. Given a set of support points $\{ \bm{\phi}_k\}$, find the optimal weights $\{ \lambda_k\}$.
+%\item [Problem 2)] 
+
+Problem 2. Find the locations of the optimal support points 
+%\end{enumerate}
+%
+
+Problems  1 and 2 are solved cyclically until convergence, i.e. no significant improvement in $l( \bm{\lambda},\bm{\phi})$.
+
+
+%%%
+Problem 1 is a convex programming problem.
+%
+In our algorithm, we solve this problem by the Primal-Dual Interior-Point (PDIP) method.
+%
+This type of method is standard in convex optimization theory, see Boyd and Vandenberghe \cite{Boyd2004}.
+%
+However, the exact implementation for a specific problem varies from problem to problem.
+%
+The exact details of our implementation is described in the Appendix.
+%
+See also \citet{Bell2012b:Online}, \citet{Baek2006}  and \citet{LAPK-2014-01}.
+%See also \citet{Bell2012b:Online,Baek2006}, {LAPK-2014-01}.
+% See also Bell (2012), Baek (2006) and  Yamada et al. (2014). 
+%
+Our PDIP implementation is very fast and can easily handle thousands of variables.
+
+%%%
+% The main contribution of this paper is the solution to Problem 2.  
+Finding the  location of the optimal support points in Problem 2 is a more difficult  problem. This location problem is a non-convex global optimization problem with many local extrema and whose dimension is potentialy $N \times \dim{\Theta}$. % $N \times  Q$.
+%
+The details of our algorithm, called the Adaptive Grid (AG) method, will be described in Section \ref{Section:Adaptive_Grid_Method} and in Algorithm 1.
+%
+Roughly speaking, an initial large grid of possible support points is defined in $\Theta$.
+%
+Problem 1 is  solved on this large grid. 
+%
+After PDIP, most of the original grid points are removed due to near-zero weights leaving a smaller high-probability grid.
+%
+Problem 1 is then solved on this smaller grid.
+%
+Then the adaptive step takes place.
+%
+For each remaining  grid point, up to $2 \times {\dim{\Theta}}$ new (daughter) support points are added.
+%
+A daughter point outside the search space $\Theta$ or too close to a parent point is discarded.
+%
+The new grid contains the current high-probability points plus the added daughter points.
+%
+The algorithm is then ready for Problem 1, again.
+%
+By construction, each iteration increases the value of $l(\bm{\lambda}, \bm{\phi})$. 
+%
+This process continues until the function $l(\bm{\lambda},\bm{\phi})$ does not significantly change.
+
+%Remark. The result of Lindsay and Mallet that $F^{ML}$ was represented by a discrete distribution with at most $N$ support points marked the beginning of most of the recent developments in NPML algorithms.
+%It is surprising to note that  a similar result holds even without the optimization step. It can be shown that {\em every} feasible distribution for the optimization problem of Eq. 1 can be represented by a discrete distribution with at most $N+1$ support points.
+% can be represented by a discrete distribution $F$ with at most $N+1$ support points. 
+%
+%This later result is a consequence of the Krein-Milman theorem for compact convex  sets
+%and Carath$\acute{e}$odory's theorem, see \cite{Lindsay1983,  Baek2006, Phelps1966}. The optimization step then just reduces the number of support points by $1$.
+%
+% integral of the form $\int p \left( Y_i \vert \theta
+%Simon B. Convexity: An Analytic Viewpoint. Cambridge University Press, 2011.
+
+
+%%% End Introduction_v12

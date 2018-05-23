@@ -1,0 +1,43 @@
+%
+% Condense Algorithm
+
+\begin{algorithm*}[htp]
+
+\caption{Condense Algorithm.
+	%
+Input:  $(\bm{\phi},  \bm{\lambda}, \Delta_\lambda)$, Output: $\bm{\phi}^c$ %\\
+%Input: $(\bar \phi,\lambda)$, \;
+%$\hat{\lambda}(\bar \phi)$).
+Note: $\bm{\phi}^c$ is considered a subset of $ \bm{\phi}$   
+}
+
+\begin{algorithmic}
+\Function{Condense}{$\bm{\phi},\bm{\lambda}, \Delta_\lambda$}	
+			
+
+%\State{ Remark. In this algorithm, $\bar \phi$ and $\bar \phi'$ are considered to be sets}
+%			
+%\State{ {\bf ind} = {\bf find} ( $\lambda > 0.00000001$)} \Comment{ Inequality is performed component-wise}
+
+\State{ {\bf ind} = {\bf find} ( $\bm{\lambda} > (\max\bm{\lambda})\Delta_\lambda $ )} \Comment{ Inequality and max are performed component-wise}
+
+\State{ $\bm{\phi}^c = \bm{\phi}(: , {\bf ind})$}
+
+\State { return $\bm{\phi}^c$ } 
+ 
+%$p(\varphi) \leftarrow $ function IPM($\Psi,\varphi$)} 				\Comment{find $p(\varphi)$}
+%%
+%\State{$\{ \bar \phi  \} = \{ \varphi \vert \; p( \varphi ) > 1\times10^{-8} \}$}
+%%
+%\State{$j' = \mbox{index}(\bar \phi \in \varphi)$}
+%%
+%\State{$w \leftarrow $ function IPM($\Psi(i, j'),\bar \phi$ )} \Comment{Returns $w = p(\bar \phi)$}
+%%
+%\State{$G = (\bar \phi, w)$}
+%%
+%\State{return($G$)}		\Comment{returns {\em potential} estimate of $F^{ML}$}
+
+
+\EndFunction
+\end{algorithmic}
+\end{algorithm*}

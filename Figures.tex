@@ -1,0 +1,77 @@
+
+
+%%% Aug 28 
+%
+% Figure 001 -- Model for simulation
+%
+\begin{figure}[hbtp] % ebb generated bb=-0 0 1282 670
+\centering
+\includegraphics[scale=0.45, bb=0 0 1282 670]{figModel.png}
+\caption{Model.
+}
+\label{Fig:Model}
+\end{figure}
+
+
+%
+% Figure 002 -- Simulated output + Estimated vs. Simulated output
+%
+\begin{figure}[ht] % ebb generated bb=0 0 403 302
+     \centering
+        \includegraphics[width=0.65\linewidth, bb =0 0 603 452]{figRunBigObservedConcentrations.jpg}
+        \caption{True simulated model profiles.}
+        \label{Fig:Spaghetti}
+\end{figure}
+
+%
+% Figure 003 -- Simulated Histograms
+%
+\begin{figure}[ht]
+\centering
+\begin{tabular}{@{}cc@{}} % ebb generated bb=0 0 403 302
+\subfigure[$K_{el}$]{\includegraphics[width=0.3\textwidth, bb=-20 0 443 402]{figRunBigSimKEL.jpg}}     
+\label{Fig:EstimatedKEL} & 
+\subfigure[$V_{c}$]{\includegraphics[width=0.3\textwidth, bb=-20 0 443 402]{figRunBigSimVOL.jpg}} 
+\label{Fig:EstimatedVOL}\\
+\subfigure[$K_{cp}$]{\includegraphics[width=0.3\textwidth, bb=-10 0 443 402]{figRunBigSimKCP.jpg}} 
+\label{Fig:EstimatedKCP} &
+\subfigure[$K_{pc}$]{\includegraphics[width=0.3\textwidth, bb=-20 0 443 402]{figRunBigSimKPC.jpg}}
+\label{Fig:EstimatedKPC} \\
+\subfigure[$K_{a}$]{\includegraphics[width=0.3\textwidth, bb=-10 0 443 402]{figRunBigSimKA.jpg}}
+\label{Fig:EstimatedPeripheralRateRatio}
+\end{tabular}
+\caption[]{Histogram of simulated PK parameters.}
+\label{Fig:EstimatedPK}
+\end{figure}
+
+%
+% Figure 004 -- Estimated Histograms
+%
+\begin{figure}[ht]
+\centering
+\begin{tabular}{@{}cc@{}} % ebb generated bb=0 0 864 648
+\subfigure[$K_{el}$]{\includegraphics[width=0.3\textwidth, bb=-10 0 964 948]{figRunBigKEL_Est.jpg}}     
+\label{Fig:SimulatedKEL} & 
+\subfigure[$V_{c}$]{\includegraphics[width=0.3\textwidth,  bb=-10 0 964 948]{figRunBigVOL_Est.jpg}} 
+\label{Fig:SimulatedVOL}\\
+\subfigure[$K_{cp}$]{\includegraphics[width=0.3\textwidth,  bb=-10 0 964 948]{figRunBigKCP_Est.jpg}} 
+\label{Fig:SimulatedKCP} &
+\subfigure[$K_{pc}$]{\includegraphics[width=0.3\textwidth,  bb=-10 0 964 948]{figRunBigKPC_Est.jpg}}
+\label{Fig:SimulatedKPC} \\
+\subfigure[$K_{a}$]{\includegraphics[width=0.3\textwidth,  bb=-10 0 964 948]{figRunBigKA_Est.jpg}}
+\label{Fig:SimulatedPeripheralRateRatio} 
+\end{tabular}
+\caption[]{Estimated Marginals of PK parameters.}
+\label{Fig:SimulatedPK}
+\end{figure}
+
+%
+%  Figure 005 --  OP plot
+%
+\begin{figure}[ht] % original ebb bb=0 0 864 648
+    \centering
+        \includegraphics[width=0.65\linewidth, bb=0 0 1164 948]{figRunBigPredictedvsObserved3.jpg}
+      \caption{Predicted vs. Observed.}
+      \label{Fig:EstimatedvsSimulated}
+\end{figure}
+

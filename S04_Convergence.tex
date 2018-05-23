@@ -1,0 +1,60 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%                                                                  Section Convergence
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+For a given initial grid $\bm{\phi}^0$, the NPAG algorithm is only guaranteed to find a local maximum of $L(F)$ . More precisely, 
+if  $\bm{\phi}^{*}$ is the final grid of NPAG starting from $\bm{\phi}^0$, then $\bm{\hat\lambda}(\bm{\phi}^{*})$
+is a global maximum on $\bm{\phi}^{*}$ but  the support points $\bm{\phi}^{*}$ may be only a local maximum.
+
+Global convergence of a nonparameteric maximum likelihood method for estimation of a multivariate mixing distribution is very difficult.  
+For one-dimensional distributions the problem is straightforward. 
+The idea of proof goes back to at least \citet{Fedorov1972} in 1972, which involves the use of {\em Directional Derivatives}. 
+
+Let $F$ be any distribution on $\Theta$.  Then the directional derivative of $\log L(F)$ in the direction of the Dirac distribution  $\delta_{\bm{\theta}}$  supported at $\bm{\theta}$ is defined by
+
+$D(\bm{\theta},F)$=[$\sum_{i = 1}^N P(\bm{Y}_i \vert \bm{\theta}) /P(\bm{Y}_i \vert F )] - N$, $\bm{\theta} \in \Theta $, 
+where
+$p(\bm{Y}_i \vert F ) = \int p(\bm{Y}_i \vert \bm{\theta} ) dF(\bm{\theta})$. 
+Let $F_k$ be the current NPML estimate at iteration $k$. The Fedorov method involves maximizing $D(\bm{\theta},F_k)$  for ${\bm{\theta} \in \Theta}$, at every iteration. Then the point at which the maximum occurs is added in an optimal way to $F_k$ to give $F_{k+1}$. Under the assumptions of regularity, Fedorov shows that 
+$L(F_k)$ converges to $L(F^{ML})$, see \citet{Fedorov1972}, (Theorem 2.5.3).  Many improvements to this method have been made. In  \citet{Lesperance1992} and \citet{Wang2015}, instead of just adding the point at which $D(\bm{\theta},F_k)$ occurs, all the points where local maxima occur are added in an optimal way.
+Again under the assumptions of regularity, convergence as above is proved.
+%either maximizing $D(\bm{\theta},F_k)$  for ${\bm{\theta} \in \Theta}$, see Fedorov (Theorem 2.5.2), or finding 
+%{\em all} the local maxima of $D(\bm{\theta},F_k)$, see Lesparance and Wang.  
+In one-dimension these methods are very efficient. In higher dimensions, these methods are not computationally practical. 
+
+%The only method we have found to guarantee  
+%global convergence in higher dimensions is to let the search space for locations of support points to be countably dense in  $ \Theta $,  see Banks, X. 
+
+%Finally, the SAEM algorithm of X has shown to be globally convergent for parametric maximum likelihood problems, but as far as we know has not yet been done for the nonparametric case.
+
+We now suggest a method to check whether the final distribution of NPAG is globally optimal and if not optimal, how close it is to the optimal.
+It also involves the use of  the directional derivative $D(\bm{\theta},F)$, but only at the last iteration of NPAG.
+Now define
+
+$D(F)=\max_{\bm{\theta} \in \Theta}  D(\bm{\theta},F)$
+
+\noindent Note that the $max$ in the above expression is only over
+$\Theta$ and not over $\Theta^N$. 
+It is proved in \citet{Lindsay1983} that $F^{*}$ is a global maximum of $L(F)$,
+%It is proved in Lindsay (1983) that $F^{*}$ is a global maximum of Eq. 1,  
+i.e. $F^{*}$=$F^{ML}$,  
+if and only if  
+$D(F^{*})= 0$
+
+Even if  $D(F^{*}) \neq 0$, it is useful to make this computation as it is also proved in \citet{Lindsay1983} that
+
+$L(F^{ML})-L(F^{*}) \le  D(F^{*})$, 
+
+\noindent so this last expression gives an estimate of the accuracy of the final NPAG result.
+
+Now even though we said above it is not practical to calculate 
+%$D(F)=\max_{\bm{\theta} \in \Theta}  D(\bm{\theta},F)$ 
+$D(F)$ at every iteration of an algorithm, 
+we are just suggesting to make this calculation at the end of the algorithm.  
+This calculation can be performed by a deterministic or stochastic optimization algorithm.
+
+
+
+

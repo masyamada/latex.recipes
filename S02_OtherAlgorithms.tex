@@ -1,0 +1,69 @@
+
+%\section{Other algorithms}
+
+\subsection{Comparable Methods}
+
+Because of space limitations, in this section we only discuss NPML methods that optimize Eq. \ref{Eqn:Likelihood002}; methods that treat multivariate distributions; and methods which allow general conditional probabilities 
+$\{P(\bm{Y}_i, \bm{\theta}_i)\}$.
+%
+As explained in this paper, any such NPML algorithm has to address two problems: {\em locations} of support points and {\em weights} of support points.
+%
+NPAG does {\em locations} by an Adaptive Grid method and {\em weights} by the Primal-Dual Interior-Point (PDIP) method.
+%
+
+The original methods of Lindsay \cite{Lindsay1983}  and Mallett  
+\cite{Mallet1986} 
+were based on algorithms of optimal design in the style of \citet{Fedorov1972}. % Fedorov (1972). %. 
+%In 1991, Schumitzky proposed an algorithm  which did both {\em locations} and {\em weights} by the EM algorithm, see Schumitzky(1991). It was very stable but also very slow. 
+In Schumitzky
+\cite{Schumitzky1991},
+an algorithm  was proposed which did both {\em locations} and {\em weights} by the EM algorithm.  It was very stable but also very slow. 
+
+In  \citet{Lesperance1992},  a new method was introduced  %\cite{Lesperance1992}.  
+which did  {\em weights}  by the dual method described in Section 5 of  \citet{Lindsay1983} 
+and {\em locations} by what they called the Intra-Simplex Direction Method (ISDM). Even though, the Lesperance and Kalbfleisch paper was restricted to univariate distributions, the ISDM method has been generalized to the multivariate case. To briefly describe ISDM, let  $D(\bm{\theta},F)$ be the directional derivative of   $\log L(F)$ in the direction of the Dirac distribution $\delta_{\bm{\theta}}$ supported at $\bm{\theta}  \in \Theta$.  (This function is defined in Section 4 below.)  ISDM is an iterative algorithm. At stage $k$, let $F^k$ be the current estimate $F^{ML}$. Then find all the local maxima  of $D(\bm{\theta}, F^k)$.  These local maxima are added to the current set of support points and a new $F^{k+1}$
+is calculated. If there are no new local maxima, then the algorithm is done.
+
+%%%
+%Most of the algorithms so far developed in the literature use some combination of the above methods.
+%
+
+
+In  \citet*{Pilla2006}, another new method was developed where
+%Pilla, Bartolucci and Lindsay
+the {\em locations} were found by an initial fine grid. But the   {\em weights} were found by a dual version of the PDIP method.
+% Finding the weights by the PDIP method is an $N$ dimensional problem, where $N$ is the number of subjects. Using the method in \cite{Pilla2006}, the finding the weights is  a $Q$-dimensional problem, where $Q$ is the dimension of $\Theta$.  $N$ is always much bigger than $Q$.
+%(In the pharmacokinetc problem in Section 5, $N=300$ while $Q=5$
+
+In  \citet* {Savic1},
+%Savic, Kjellsson and  Karlsson(2009), 
+a nonparametric method was added to the popular NONMEM program. NONMEM-NP   is a hybrid parametric-nonparametric approach %\cite{Savic1}.
+The {\em locations} of support points were found by a parametric maximum likelihood algorithm. Then the {\em weights} were found by maximizing Eq. (4) relative to the newly found support points. 
+NONMEM-NP can handle high dimensional and complex multivariate distributions. An extension to NONMEM-NP was developed in %\cite{Savic2009c}
+\citet{Savic2}
+where additional support points are added to the original set. A comparison between NONMEM-NP and NPAG is discussed in \citet*{Leary2017}.
+
+%In 2015, 
+
+In % Wang and Wang (2015),
+\citet{Wang2015} ,
+a new algorithm was developed for multivariate distributions. The {\em locations} were found by a combination of EM and a variant of ISDM. The {\em weights} were found by a family  of Quadratic Programs.  In \cite{Wang2015}, examples are done for 8 and 13 dimensional mutivariate mixing distributions. 
+%Clearly the problem of finding local maxima of $D(\bm{\theta},F)$ is much easier in 1 dimension than in 8 or 13 dimensions.
+
+Note: The Quadratic Programming algorithm (QP) of  \citet{Wang2015} has a very attractive feature. For a prescribed set of support points, QP finds the zero probabilities exactly. Thus QP avoids the Grid Condensation step where support points from PDIP with sufficiently low probabilities are deleted. However, QP and PDIP are based on different numerical methods and a comparison of the efficiency of both algorithms has not been determined.
+
+The algorithms which have shown by published examples to handle the highest dimensional multivariate problems are NONMEM NP, \citet{Wang2015},  and NPAG.
+
+
+
+
+\subsection{Benders Decomposition}
+For any set of grid points $\bm{\phi} = (\bm{\phi}_1, ...,\bm{\phi}_m)$ in $\Theta^m$, 
+let $\bm{\lambda} = \bm{\hat{\lambda}}(\bm{\phi})$
+ be the corresponding set of optimal weights given by the PDIP  method.
+Then the function $F(\bm{\phi}) =l( \bm{\hat{\lambda}}(\bm{\phi}),\bm{\phi})$ depends only on $\bm{\phi}$  and can be maximized directly.
+For optimization methods,  this technique  is called Benders Decomposition. The NPAG algorithm maximizes $F(\bm{\phi})$ by an adaptive search method. In a method proposed by James Burke, $F(\bm{\phi})$ is maximized  by a Newton type method. Since the function  $F(\bm{\phi}$) is not necessarily differentiable, a relaxed Newton method must be used similar to what is described in the Appendix for the Primal-Dual Algorithm. For details of Benders Decomposition as applied to our problem,  see  \citet{Baek2006, Bell2012b:Online}  and \citet{Squire2015}.
+%\cite{Bell2012b:Online, Baek2006}.
+
+
+

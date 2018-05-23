@@ -1,0 +1,76 @@
+
+%%% Aug 28 
+%
+% Figure 001 -- Model for simulation
+%
+\begin{figure}[hbtp]
+\centering
+\includegraphics[scale=0.45]{figModel.png}
+\caption{Model.
+}
+\label{Fig:Model}
+\end{figure}
+
+
+%
+% Figure 002 -- Simulated output + Estimated vs. Simulated output
+%
+\begin{figure}[ht]
+     \centering
+        \includegraphics[width=0.65\linewidth]{figRunBigObservedConcentrations.jpg}
+        \caption{True simulated model profiles.}
+        \label{Fig:Spaghetti}
+\end{figure}
+
+%
+% Figure 003 -- Simulated Histograms
+%
+\begin{figure}[h]
+\centering
+\begin{tabular}{@{}cc@{}}
+\subfigure[$K_{el}$]{\includegraphics[width=0.3\textwidth]{figRunBigSimKEL.jpg}}     
+\label{Fig:EstimatedKEL} & 
+\subfigure[$V_{c}$]{\includegraphics[width=0.3\textwidth]{figRunBigSimVOL.jpg}} 
+\label{Fig:EstimatedVOL}\\
+\subfigure[$K_{cp}$]{\includegraphics[width=0.3\textwidth]{figRunBigSimKCP.jpg}} 
+\label{Fig:EstimatedKCP} &
+\subfigure[$K_{pc}$]{\includegraphics[width=0.3\textwidth]{figRunBigSimKPC.jpg}}
+\label{Fig:EstimatedKPC} \\
+\subfigure[$K_{a}$]{\includegraphics[width=0.3\textwidth]{figRunBigSimKA.jpg}}
+\label{Fig:EstimatedPeripheralRateRatio}
+\end{tabular}
+\caption[]{Histogram of simulated PK parameters.}
+\label{Fig:EstimatedPK}
+\end{figure}
+
+%
+% Figure 004 -- Estimated Histograms
+%
+\begin{figure}[h]
+\centering
+\begin{tabular}{@{}cc@{}}
+\subfigure[$K_{el}$]{\includegraphics[width=0.3\textwidth]{figRunBigKEL_Est.jpg}}     
+\label{Fig:SimulatedKEL} & 
+\subfigure[$V_{c}$]{\includegraphics[width=0.3\textwidth]{figRunBigVOL_Est.jpg}} 
+\label{Fig:SimulatedVOL}\\
+\subfigure[$K_{cp}$]{\includegraphics[width=0.3\textwidth]{figRunBigKCP_Est.jpg}} 
+\label{Fig:SimulatedKCP} &
+\subfigure[$K_{pc}$]{\includegraphics[width=0.3\textwidth]{figRunBigKPC_Est.jpg}}
+\label{Fig:SimulatedKPC} \\
+\subfigure[$K_{a}$]{\includegraphics[width=0.3\textwidth]{figRunBigKA_Est.jpg}}
+\label{Fig:SimulatedPeripheralRateRatio} 
+\end{tabular}
+\caption[]{Estimated Marginals of PK parameters.}
+\label{Fig:SimulatedPK}
+\end{figure}
+
+%
+%  Figure 005 --  OP plot
+%
+\begin{figure}
+    \centering
+        \includegraphics[width=0.65\linewidth]{figRunBigPredictedvsObserved3.jpg}
+      \caption{Predicted vs. Observed.}
+      \label{Fig:EstimatedvsSimulated}
+\end{figure}
+

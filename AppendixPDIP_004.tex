@@ -1,0 +1,327 @@
+%
+% Appendix02 PDIP_002.tex
+%
+\newpage
+\appendix
+\section{A Primal-Dual Interior-Point Algorithm (PDIP) }
+\label{App:PDIP}
+
+To make this paper self-contained, we outline here the PDIP algorithm which was written by James Burke.
+This algorithm is a FORTRAN subroutine of NPAG. The description below is based on the Matlab and C++  codes  found in Bradley Bell's website, 
+see \cite{Bell2012b:Online}.
+ Definition of general terms and theorems can be found in  \citet{Boyd2004}.
+
+\subsection{Duality Theory and the Basic Problem}
+Given a set of support points $\{\phi_k\}$, the problem of finding the optimal weights $\{\lambda_k\}$ in Eq. \ref{Eqn:Likelihood002} can be posed as the following optimization problem
+%
+\[
+	\mathcal{P} \quad \min \Phi\left( \bm{\Psi\lambda} \right) \; \mbox{s.t.} \; 0 \le \bm{\lambda}, \; \bm{e}^\intercal\bm{\lambda} = 1,
+\]
+where $\bm{\Psi} \in \mathbb{R}^{n \times m}$ is the matrix whose $(i,j)$ entry is $p(y_i \mid \phi_j)$ and where in general, the function $\Phi : {\mathbb R}^k \mapsto {\mathbb R} \cup \{ +\infty \}$ is given by
+%
+\begin{equation}
+	\Phi(z) = \begin{cases}
+			- \sum_{i=1}^{k} \log z_i &,\mbox{$0 < z$, and} \\
+			+\infty &, \mbox{otherwise.}
+		\end{cases}
+\end{equation}
+The symbol $\bm{e}$ is always to be interpreted as the vector of all ones of the appropriate dimension. 
+
+The problem ${\mathcal P}$ is a convex programming problem since the objective function $\Phi$ is convex and the constraining region is a convex set.    The Fenchel-Rockafellar dual of the convex program ${\mathcal P}$ is the problem
+\[
+	{\mathcal D} \quad \min_{} \Phi(\bm{\omega}) \quad \mbox{s.t.} \; \bm{L}^\intercal \bm{\omega} \le m\bm{e}.
+\]
+From Boyd we obtain the following Karush-Kuhn-Tucker (KKT) equations relating the solutions to the problem ${\mathcal P}$ and ${\mathcal D}$.
+
+% \vskip 12pt
+% \noindent
+%{\bf Theorem 1}{\bf }
+%{\em
+%Assume that the matrix $L$ in the problem ${\mathcal P}$ satisfies $Le > 0$.
+%%
+%Then the constraint region for both of the problems ${\mathcal P}$ and ${\mathcal D}$ is non-empty and compact.
+%%
+%Solutions to both ${\mathcal P}$ and ${\mathcal D}$ always exist with the solution to ${\mathcal D}$ being unique.
+%%
+%In addition we have that $p$ solves ${\mathcal P}$ and $w$ solves ${\mathcal D}$ if and only if $0 \le p$, $0 \le w$, and there exists $y \in \mathbb{R}_{+}^{n}$ such that
+\begin{align}
+	m\bm{e} &= \bm{\Psi}^\intercal \bm{w} + \bm{y} \\
+	\bm{e} &= \bm{W}\bm{\Psi} \bm{\lambda} \\
+	0 &= \bm{\Lambda} \bm{Y} \bm{e}
+\end{align}
+where for any vector $\bm{x}$, we define $\bm{X}$ to be the diagonal matrix having $\bm{x}$ along the diagonal.
+%}
+% } \end{thm}
+
+\subsection{An Interior-Point Path-Following Algorithm}
+
+The relaxed KKT is given by
+%for solving the system 
+%\begin{align*}
+%	u &= Mv + q \\
+%	UVe &= b.
+%\end{align*}
+%The path we follow is the {\em central path} for this system and as such it lies entirely in the interior of the positive orthant.  The central path is given as the set of solutions to the system
+\begin{align}
+	m\bm{e} &=\bm{\Psi}^\intercal \bm{w} + \bm{y} \label{Eqn:StartRelKKT}\\
+	\bm{e} &= \bm{W} \bm{\Psi} \bm{\lambda} \\
+	\mu \bm{e} &= \bm{\Lambda} \bm{Y} \bm{e} \\
+	& 0 \le \bm{\lambda}, \; 0 \le \bm{w}, \; 0 \le \bm{y}, \label{Eqn:EndRelKKT}
+\end{align}
+for $\mu > 0$. ($\mu$ is the relaxation parameter.)
+%In our implementation, we apply 
+A damped Newton's method is used to solve the above system.   
+%The proposed implementation is a {\em feasible path-following} method since all iterates are chosen to satisfy the affine equation 
+%\[
+%	u = Mv + q.
+%\]
+
+Consider the function $F: \; \mathbb{R}^{2m+n} \mapsto \mathbb{R}^{2m+n}$ given by
+\[
+	F(\bm{\lambda}, \bm{w}, \bm{y}) = \begin{bmatrix}
+			\bm{\Psi}^\intercal \bm{w} + \bm{y} \\
+			\bm{W}\bm{\Psi}\bm{\lambda} \\
+			\bm{\Lambda} \bm{Y} \bm{e}
+		\end{bmatrix} .
+\]
+A triple $(\bm{\lambda},\bm{w},\bm{ y})$ solves Eqs. A.\ref{Eqn:StartRelKKT} to A.\ref{Eqn:EndRelKKT} if and only if
+\begin{equation}
+	F \left(\bm{\lambda}, \bm{w}, \bm{y} \right) =
+		\left( \begin{array}{c}
+				m\bm{e} \\
+				\bm{e} \\
+				\mu \bm{e} 
+		\end{array} \right) \label{Eqn:cp}
+\end{equation}
+and $0 \le \bm{\lambda}$, $0 \le \bm{\omega}$, and $0 \le \bm{y}$.
+%
+Path-following algorithms attempt to solve \ref{Eqn:cp} by applying Newton's method for progressively smaller values of the relaxation parameter $\mu$.
+%
+We first need the derivative of $F$. It follows
+\[
+	F'(\bm{\lambda}, \bm{\omega}, \bm{y}) = 
+		\begin{bmatrix}
+			0 & \bm{\Psi}^\intercal & I \\
+			\bm{W} \bm{\Psi} & \bm{Z}& 0 \\
+			\bm{Y} & 0 & \bm{\Lambda}
+		\end{bmatrix}
+\]
+where $\bm{z} = \bm{\Psi} \bm{\lambda}$.
+
+
+%Now write
+%$\alpha =(\lambda,w,y)$.
+At the kth iteration of the algorithm, the Newton step is given by the solution to the nonsingular linear system
+\begin{equation}
+	F \left( \bm{\lambda}^k, \bm{w}^k, \bm{y}^k \right) +
+		F' \left( \bm{\lambda}^k, \bm{w}^k, \bm{y}^k \right)
+		*\left[ \bm{\Lambda}^k, \bm{W}^k, \bm{Y}^k \right]^\intercal
+	= \left[ \bm{e}_m , \bm{e}_n, \mu^k \bm{e}_m \right]^\intercal
+\label{Eqn:NewtonUpdate}
+\end{equation}
+where $\bm{y}$  is constrained to satisfy the first KKT condition $\bm{y}^k=\bm{e}_m-\bm{\Psi}^\intercal \bm{w}^k$.
+
+The above set of equations can be reduced by standard techniques.
+It follows:
+\begin{align}
+\Delta \bm{w} &=\bm{H}^{-1} \bm{r}_2\label{Eqn:Start}\\
+\Delta \bm{y} &= -\bm{\Psi} \Delta \bm{\omega}\\
+\Delta \bm{\lambda} &= \bm{r}_1 - \bm{\lambda}  - \bm{D}_1 \Delta \bm{y}
+\end{align}
+where
+$\bm{H} =\bm{D}_2 - \bm{\Psi} \bm{D}_1 \bm{\Psi}^\intercal$, 
+$\bm{D}_2= \bm{Z}\bm{W}^{-1}$, 
+$\bm{D}_1= \bm{\Lambda} \bm{Y}^{-1}$,
+$\bm{r}_1=\mu \bm{Y}^{-1} \bm{e}$,  $\bm{r}_2 = \bm{W}^{-1} \bm{e} - \bm{\Psi} \bm{r}_1$
+where the superscript $k$ is suppressed for simplicity.
+
+\subsection{The Algorithm}
+ To describe the algorithm we need to define the variables:
+
+$q=\frac{1} {m} \sum_{i=1}^m \lambda_i y_i$
+
+$\rho = \Vert \bm{e} - \bm{W}\bm{Z}\bm{e} \Vert_\infty$ 
+
+\noindent and the scaled duality gap
+
+$\gamma= \frac{\vert \Phi(\bm{\omega}) + \Phi(\bm{\Psi}\bm{\lambda}) \vert}{1 + \vert \Phi(\bm{\Psi}\bm{\lambda}) \vert}$.  
+
+\noindent ({\em Initialization })
+
+Initially choose
+%
+$\bm{\lambda}^0 = \bm{e}_m/m $, % / m$, % \lambda is initialized to 1, not 1/m.
+%
+$\bm{w}^0 = \bm{e}_n / \bm{\Psi}  \bm{\lambda}^0$, and % No reason to multiply by 1
+%
+$\bm{y}^0 = \bm{e}_m - \bm{\Psi}^\intercal \bm{w}^0$.
+%
+(Division of two vectors is performed component-wise.) 
+%
+Set $\varepsilon = 10^{-8}$.
+
+\noindent ({\em Iteration })
+
+At iteration $k+1$, set 
+
+$\mu^{k+1} = \sigma^k q^k$
+
+\noindent where the reduction factor $\sigma$ is defined by
+\[
+	\sigma = \begin{cases}
+			1  &, \mbox{if $\mu \le \varepsilon$ and $\rho > \varepsilon$,} \\
+			\min(0.3, (1-\delta_1)^2), (1-\delta_2)^2, \frac{\vert \rho - \mu \vert}{\rho + 100\tau} &, \mbox{otherwise.}
+		\end{cases}
+\]
+\noindent The next iterates are given by $ \bm{\lambda}^{k+1}=\bm{\lambda}^k+\delta_1[ \Delta \bm{\lambda}^k ]$, $ \bm{\omega}^{k+1}= \bm{\omega}^k+\delta_2 [ \Delta \bm{\omega}^k]$
+and $ \bm{y}^{k+1}= \bm{y}^k+\delta_2 [ \Delta \bm{y}^k ]$, where
+the ``damping'' factors $\delta_1$ and $\delta_2$ are defined by
+\begin{align*}
+	\delta_{1,0} &= -\left[ \min(\min(\bm{\Lambda}^{-1}\Delta\bm{\lambda}), -\frac{1}{2} ) \right]^{-1} \\
+	\delta_{2,0} &= -\left[  \min( \min(\bm{Y}^{-1}\Delta \bm{y}), \min(\bm{W}^{-1}\Delta \bm{w})   , -\frac{1}{2}) \right]^{-1} \\
+	\delta_1 &= \min(1, 0.99995 \delta_{1,0}) \\
+	\delta_2 &= \min(1, 0.99995 \delta_{2,0})
+\end{align*}
+ 
+\noindent ({\em Exit Conditions})
+
+Iterate Eqs. A.11-A-13 until
+%\ref{Eqn:NewtonUpdate} 
+ 
+$\mu \leq \varepsilon$ and $\rho \leq \varepsilon$ and $\gamma \leq \varepsilon$. 
+
+\noindent If these conditions are not satisfied after a set number of iterations, then write
+``PDIP did not converge in the given number of iterations.''
+
+
+%In order to compute the Newton step for the system, we need to know that the matrix
+%\[
+%	F'(p,w,y) = 
+%		\begin{bmatrix}
+%			0 & L^T & I \\
+%			WL & Diag(Lp) & 0 \\
+%			Y & 0 & P
+%		\end{bmatrix}
+%\]
+%is nonsingular.  It is easily shown that this system is nonsingular whenever $0 < p$, $0 < w$, and $0 < y$ with inverse given by
+%\begin{equation}
+%	F'(p,w,y) = 
+%		\begin{bmatrix}
+%			DL^TH^{-1}LD - D & DL^TH^{-1}W^{-1} & Y^{-1} - DL^TH^{-1}LY^{-1} \\
+%			H^{-1}LD &  H^{-1}W^{-1} & -H^{-1}LY^{-1} \\
+%			I - L^TH^{-1}LD & -L^TH^{-1}W^{-1} & L^TH^{-1}LY^{-1}
+%		\end{bmatrix}, \label{Eqn:FPrimeInv}
+%\end{equation}
+%where $D = PY^{-1}$ and $H = [Diag(Lp)W^{-1} + LDL^T]$.  The matrix $H$ in \ref{Eqn:FPrimeInv} is itself nonsingular since $Diag(Lp)W^{-1}$ is positive definite and $LDL^T$ is positive semi-definite whenever $0 < p$, $0 < w$, and $0 < y$.
+
+%\subsection{The Algorithm}
+%
+%
+%
+%
+%
+%\noindent ({\em Initialization })
+%
+%Initially choose
+%%
+%$\lambda^0 = e_m $, % / m$, % \lambda is initialized to 1, not 1/m.
+%%
+%$\omega^0 = e_n / \Psi  \lambda^0$, and % No reason to multiply by 1
+%%
+%$y^0 = e_m - \Psi^T \omega^0$.
+%%
+%(Division of two vectors is performed component-wise.) 
+%%
+%Set $\varepsilon = 10^{-8}$ 
+%
+%  Note to editor: This should probably be done as a table w/no cell boundary lines
+%
+%% \vbox{
+%	\begin{minipage}{0.5\textwidth}
+%		\begin{align*}
+%			\varepsilon &= 10^{-8} \quad \mbox{(stopping tolerance)} \\
+%			\sigma &= 0 \quad \mbox{(homotopy reduction parameter)} \\
+%			w &= Diag(\Psi e)^{-1}e \\
+%			h &= L^Tw \\
+%			\nu &= 2\max(h) \\
+%			p &= \nu e \\
+%			w &= \nu^{-1} w
+%		\end{align*}
+%	\end{minipage}% Must be here ... and have no space!
+%	\begin{minipage}{0.5\textwidth}
+%		\begin{align*}
+%			h &= \nu^{-1}h \\
+%			y &= e = h \\
+%			z &= Lp \\
+%			\rho &= \Vert e - WZe \Vert_\infty \\
+%			\tau &= p^T y / n \\
+%			\gamma &= \frac{\vert \phi(w) + \phi(z) \vert}{1 + \vert \phi(z) \vert} \quad \mbox{(scaled duality gap)} \\
+%		\end{align*}
+%	\end{minipage}
+% }
+% }
+
+%\noindent ({\em Iteration })
+%
+%Let
+%\begin{align}
+%	r &= \max_{i=1, \cdots , n}  
+%		\left\| \left[ D (\omega) \Psi  \lambda \right]_i  -1 \right\|
+%\intertext{and}
+%	\gamma &= \frac{\vert \Phi(\omega) + \Phi(\Psi\lambda) \vert}{1 + \vert \Phi(\Psi\lambda) \vert}.
+%\end{align}
+%Then iterate Eq. \ref{Eqn:NewtonUpdate} while  $\mu > \varepsilon$ or $r > \varepsilon$ or $\gamma > \varepsilon$ . 
+%%or $\gamma > \varepsilon$%. 
+%The damping factors $\delta$ for each step are
+%\begin{align*}
+%	\delta_1 &= -\left[ \min(\min(\Lambda ^{-1}\Delta \lambda), -\frac{1}{2} ) \right]^{-1} \\
+%	\delta_2 &= -\left[  \min( \min(Y^{-1}\Delta y), \min(W^{-1}\Delta w)   , -\frac{1}{2}) \right]^{-1}
+%\intertext{and the reduction factor $\sigma$ is}
+%	\sigma &= \begin{cases}
+%			1  &, \mbox{if $\tau \le \varepsilon$ and $\rho > \varepsilon$,} \\
+%			\min(0.3, (1-\delta_1)^2), (1-\delta_2)^2, \frac{\vert \rho - \tau \vert}{\rho + 100\tau} &, \mbox{otherwise.}
+%		\end{cases}
+%\end{align*}
+%\newpage
+%THE FOLLOWING ALGORITHM (steps 1 -- 4)  WILL BE DELETED; just keep for now to check against above text.
+%\vskip 24pt
+%\noindent While $\tau > \varepsilon$, or $\rho > \varepsilon$, or $\gamma > \varepsilon$:
+%
+%\begin{enumerate}
+%\item Compute the Newton Step:
+%\begin{alignat*}{3}
+%	& \tau = \sigma \tau & && &r_1 = \tau Y^{-1}e \\
+%	& D_1 = \Lambda Y^{-1} & && & r_2 = W^{-1}e - Lr_1 \\
+%	& D_2 = ZW^{-1} & && & \Delta w = R^{-1}R^{-T}r_2 \\
+%	& H = D_2 + LD_1L_T & && &\Delta y = -L^T \Delta w \\
+%	& R^TR = H & & (\mbox{Cholesky  factorization}) \quad & & \Delta \lambda = r_1 - \lambda - D_1 \Delta y
+%\end{alignat*}
+%\item Compute a damping for the Newton Step to maintain strict positivity:
+%\begin{align*}
+%	\delta_1 &= -\left[ \min(\min(\Lambda ^{-1}\Delta \lambda), -\frac{1}{2} ) \right]^{-1} \\
+%	\delta_2 &= -\left[  \min( \min(Y^{-1}\Delta y), \min(W^{-1}\Delta w)   , -\frac{1}{2}) \right]^{-1} \\
+%	\delta_1 &= \min(1, 0.99995 \delta_1) \\
+%	\delta_2 &= \min(1, 0.99995 \delta_2)
+%\end{align*}
+%\item Update the iterate:
+%\begin{alignat*}{2}
+%	& \lambda = \lambda + \delta_1\Delta \lambda \quad && z = L\lambda \\
+%	& w = w+\delta_2\Delta w \quad && \tau = \lambda^T y/n \\
+%	& y = y + \delta_2 \Delta y \quad && \rho = \Vert e = WZe \Vert_\infty \\
+%	& h = h - \delta_2 \Delta y \quad && 
+%\gamma = \frac{\vert \Phi(w) + \Phi(z) \vert}{1 + \vert \Phi(z) \vert}.
+%\end{alignat*}
+%\item Update the reduction factor $\sigma$:
+%\[
+%	\sigma = \begin{cases}
+%			1  &, \mbox{if $\tau \le \varepsilon$ and $\rho > \varepsilon$,} \\
+%			\min(0.3, (1-\delta_1)^2), (1-\delta_2)^2, \frac{\vert \rho - \tau \vert}{\rho + 100\tau} &, \mbox{otherwise.}
+%		\end{cases}
+%\]
+%\end{enumerate}
+
+
+
+
+
+
